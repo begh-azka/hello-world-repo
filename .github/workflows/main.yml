@@ -11,13 +11,37 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Print message
-        run: echo "GitHub Actions is running!huzzah"
+        run: echo "GitHub Actions is running!"
 
   test_job: 
     needs: build_job
     runs-on: ubuntu-latest
 
     steps:
-      - name: Do an ls
-        run: ls -lrt
-        
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Echo
+        run: echo "Good Afternoon" > hello.txt
+
+      - name: cat hello.txt
+        run: cat hello.txt
+      
+      - name: Upload the text file
+        uses: actions/upload-artifact@v3
+        with:
+          name: hello-file
+          path: hello.txt
+  
+  deploy_job:
+    needs: test_job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download the text file
+        uses: actions/download-artifact@v3
+        with:
+          name: hello-file
+          path: hello.txt
+      
+      - name: Print the Hello File
+        run: cat hello.txt
