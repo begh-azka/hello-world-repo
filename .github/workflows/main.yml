@@ -28,7 +28,7 @@ jobs:
         run: cat hello.txt
       
       - name: Upload the text file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: hello-file
           path: hello.txt
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download the text file
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: hello-file
           path: hello.txt
