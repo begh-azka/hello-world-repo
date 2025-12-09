@@ -1,10 +1,10 @@
 name: Hello World CI
 
-on: push
-
 env:
   USERNAME: "azka"
   PASSWORD: "hellosecure"
+
+on: push
 
 jobs:
   build_job:
