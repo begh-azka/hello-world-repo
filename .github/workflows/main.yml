@@ -3,8 +3,8 @@ name: Hello World CI
 on: push
 
 env:
-  USERNAME: azka
-  PASSWORD: hello
+  USERNAME: "azka"
+  PASSWORD: "hellosecure"
 
 jobs:
   build_job:
