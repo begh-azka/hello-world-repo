@@ -2,6 +2,10 @@ name: Hello World CI
 
 on: push
 
+env:
+  USERNAME: azka
+  PASSWORD: hello
+
 jobs:
   build_job:
     runs-on: ubuntu-latest
@@ -11,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Print message
-        run: echo "GitHub Actions is running!"
+        run: echo "GitHub Actions is running! User is {{ env.USERNAME }} and Password is {{ env.PASSWORD }}"
 
   test_job: 
     needs: build_job
