@@ -41,7 +41,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: hello-file
-          path: ./hello.txt
+
       - run: ls -lrt
       - name: Print the Hello File
         run: cat hello.txt
