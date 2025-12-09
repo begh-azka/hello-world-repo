@@ -1,4 +1,4 @@
-name: Hello World CI
+name: Hello World
 
 env:
   USERNAME: "azka"
@@ -7,45 +7,9 @@ env:
 on: push
 
 jobs:
-  build_job:
+  hello-job:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Print message
-        run: echo "GitHub Actions is running! User is ${{ env.USERNAME }} and Password is ${{ env.PASSWORD }}"
-
-  test_job: 
-    needs: build_job
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Echo
-        run: echo "Good Afternoon" > hello.txt
-
-      - name: cat hello.txt
-        run: cat hello.txt
-      
-      - name: Upload the text file
-        uses: actions/upload-artifact@v4
-        with:
-          name: hello-file
-          path: ./hello.txt
-  
-  deploy_job:
-    needs: test_job
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download the text file
-        uses: actions/download-artifact@v4
-        with:
-          name: hello-file
-
-      - run: ls -lrt
-      - name: Print the Hello File
-        run: cat hello.txt
+      - name: Echo text
+        uses: echo "Hello, world!"
