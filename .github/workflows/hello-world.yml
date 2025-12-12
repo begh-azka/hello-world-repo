@@ -19,7 +19,7 @@ jobs:
          uses: actions/checkout@v4
       
        - name: Create Tag
-         if: ${{ github.ref_name == 'master' || github.ref_name == 'release' }}
+         if: ${{ github.ref_name == 'main' || github.ref_name == 'release' }}
          run: |
            TAG="v1.0.${{ github.run_number }}"
            echo "Tag: $TAG"
