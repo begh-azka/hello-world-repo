@@ -21,3 +21,11 @@ jobs:
     steps:
       - name: Echo text
         run: echo "Hello, world!"
+  deploy:
+    concurrency:
+      group: ${{ github.ref }} 
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo text
+        run: echo "Hello, ${{ github.ref }}!"
