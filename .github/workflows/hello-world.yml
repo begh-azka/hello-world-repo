@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Echo the OS name 
-        run: echo "Hello from ${{ runner.os }}"
+        run: lslp
   deploy:
     runs-on: ubuntu-latest
     if: github.ref_name == 'main'
