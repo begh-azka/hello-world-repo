@@ -29,5 +29,5 @@ jobs:
     steps:
       - name: Echo text
         run: echo "Hello, ${{ github.ref_name }}!"
-      - name: sleep 5 minutes
-        run: sleep 300s
+      - name: sleep 1 minutes
+        run: sleep 60s
