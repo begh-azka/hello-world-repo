@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
-        images: [hello-world, alpine]
+        image: [hello-world, alpine]
         exclude:
         - os: windows-latest
           image: alpine
@@ -31,5 +31,5 @@ jobs:
       - name: Echo the OS name 
         run: echo "Hello from ${{ matrix.os }}"
       - name: Echo the name of the image
-        run: echo "Hello from ${{ matrix.images }}"
+        run: echo "Hello from ${{ matrix.image }}"
     
