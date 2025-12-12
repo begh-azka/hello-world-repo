@@ -30,6 +30,3 @@ jobs:
           echo "hello"
           ls -l
           sleep 60s
-          
-        run: echo "Hello from ${{ matrix.image }}"
-    
