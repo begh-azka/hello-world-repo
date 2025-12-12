@@ -22,12 +22,14 @@ jobs:
       - name: Echo text
         run: echo "Hello, world!"
   deploy:
-    concurrency:
-      group: deploy-${{ github.ref_name }}
-      cancel-in-progress: false
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        images: [hello-world, alpine]
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Echo text
-        run: echo "Hello, ${{ github.ref_name }}!"
-      - name: sleep 1 minutes
-        run: sleep 60s
+      - name: Echo the OS name 
+        run: echo "Hello from ${{ matrix.os }}"
+      - name: Echo the name of the image
+        run: echo "Hello from ${{ matrix.images }}"
+    
