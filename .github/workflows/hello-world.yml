@@ -5,6 +5,7 @@ env:
   PASSWORD: "hellosecure"
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       environment:
@@ -22,7 +23,6 @@ jobs:
         run: lslp
   deploy:
     runs-on: ubuntu-latest
-    if: github.ref_name == 'main'
     needs: build
     steps:
       - name: Docker Run
