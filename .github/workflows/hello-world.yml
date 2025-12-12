@@ -28,6 +28,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Echo text
-        run: echo "Hello, ${{ github.ref }}!"
+        run: echo "Hello, ${{ github.ref_name }}!"
       - name: sleep 5 minutes
         run: sleep 300s
