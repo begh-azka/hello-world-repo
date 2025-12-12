@@ -15,21 +15,21 @@ on:
         options: ["dev", "staging", "prod"]
 
 jobs:
-  first_job:
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest]
-        image: [hello-world, alpine]
-        exclude:
-        - os: windows-latest
-          image: alpine
-        include: 
-        - os: macos-latest
-          image: scratch
-    runs-on: ${{ matrix.os }}
+  build:
+    runs-on: ubuntu-latest
     steps:
       - name: Echo the OS name 
-        run: echo "Hello from ${{ matrix.os }}"
-      - name: Echo the name of the image
+        run: echo "Hello from ${{ runner.os }}"
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main'
+    needs: build
+    steps:
+      - name: Docker Run
+        run: |
+          echo "hello"
+          ls -l
+          sleep 60s
+          
         run: echo "Hello from ${{ matrix.image }}"
     
