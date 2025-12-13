@@ -6,12 +6,11 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Which environment to deploy"
+        description: "Deploy To: "
         required: true
         default: "dev"
-        type: choice
-        options: ["dev", "staging", "prod"]
-
+        type: environment
+ 
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,8 +19,9 @@ jobs:
          uses: actions/checkout@v4
       
        - name: Create Tag
-         if: ${{ github.ref_name == 'main' || github.ref_name == 'release' }}
+         if: ${{ github.ref_name == 'main' || github.ref_name == 'release' && inputs.environment == 'dev'}}
          run: |
+           echo ${{ inputs.environment}}
            TAG="v1.0.${{ github.run_number }}"
            echo "Tag: $TAG"
            git tag $TAG
