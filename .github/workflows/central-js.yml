@@ -2,27 +2,27 @@ name: Central Js
 
 on:
    workflow_call:
-    # inputs:
-    #   run_type:
-    #     description: "snapshot or release"
-    #     required: true
-    #     type: string
+    inputs:
+      run_type:
+        description: "snapshot or release"
+        required: true
+        type: string
 
-    #   dev_server:
-    #     required: false
-    #     type: string
+      dev_server:
+        required: false
+        type: string
 
-    #   sit_server:
-    #     required: false
-    #     type: string
+      sit_server:
+        required: false
+        type: string
 
-    #   qa_server:
-    #     required: false
-    #     type: string
+      qa_server:
+        required: false
+        type: string
 
-    #   prod_server:
-    #     required: false
-    #     type: string
+      prod_server:
+        required: false
+        type: string
        
 jobs:
   build:
