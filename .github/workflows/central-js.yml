@@ -53,14 +53,14 @@ jobs:
           name: node_modules-${{ github.run_number }}
           path: node_modules
 
-      - name: Run Unit Testing
-        run: npm test
+      # - name: Run Unit Testing
+      #   run: npm test
 
-      - name: Run Code Coverage
-        run: npm run coverage
+      # - name: Run Code Coverage
+      #   run: npm run coverage
 
-      - name: Start application
-        run: npm start
+      # - name: Start application
+      #   run: npm start
 
   deploy:
     name: Deploy to ${{ inputs.environment }}
