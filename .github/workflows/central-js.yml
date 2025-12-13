@@ -8,10 +8,10 @@ on:
         required: true
         type: string
 
-      environment:
-        description: "Select environment"
-        required: true
-        type: string
+      # environment:
+      #   description: "Select environment"
+      #   required: true
+      #   type: string
       
       dev_server:
         required: false
