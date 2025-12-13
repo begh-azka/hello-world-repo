@@ -1,0 +1,80 @@
+name: Central Js
+
+on:
+   workflow_call:
+    inputs:
+      run_type:
+        description: "snapshot or release"
+        required: true
+        type: string
+
+      environment:
+        description: "Select environment"
+        required: true
+        type: string
+      
+      dev_server:
+        required: false
+        type: string
+
+      sit_server:
+        required: false
+        type: string
+
+      qa_server:
+        required: false
+        type: string
+
+      prod_server:
+        required: false
+        type: string
+       
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install Dependencies from package.json
+        run: npm install
+
+      - name: Upload node_modules
+        uses: actions/upload-artifact@v4
+        with:
+          name: node_modules-${{ github.run_number }}
+          path: node_modules
+
+      - name: Run Unit Testing
+        run: npm test
+
+      - name: Run Code Coverage
+        run: npm run coverage
+
+      - name: Start application
+        run: npm start
+
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    # THIS LINE ENABLES APPROVALS
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Deployment info
+        run: |
+          echo "Deploying ${{ inputs.run_type }} build to ${{ inputs.environment }}"
+          echo "Server: ${{ inputs.prod_server }}"
+          echo "Server: ${{ inputs.dev_server }}"
+          echo "Server: ${{ inputs.sit_server }}"
+          echo "Server: ${{ inputs.qa_server }}"
