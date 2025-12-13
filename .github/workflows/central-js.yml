@@ -66,14 +66,20 @@ jobs:
     name: Deploy to ${{ inputs.environment }}
     runs-on: ubuntu-latest
     needs: build
-
     # THIS LINE ENABLES APPROVALS
-    environment: ${{ inputs.environment }}
+   # environment: ${{ inputs.environment }}
+    environment: >-
+        ${{
+         inputs.prod_server != '' && 'prod' ||
+         inputs.qa_server   != '' && 'qa'   ||
+         inputs.sit_server  != '' && 'sit'  ||
+         inputs.dev_server  != '' && 'dev'
+        }}
 
     steps:
       - name: Deployment info
         run: |
-          echo "Deploying ${{ inputs.run_type }} build to ${{ inputs.environment }}"
+          echo "Deploying ${{ inputs.run_type }} build"
           echo "Server: ${{ inputs.prod_server }}"
           echo "Server: ${{ inputs.dev_server }}"
           echo "Server: ${{ inputs.sit_server }}"
