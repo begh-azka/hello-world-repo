@@ -1,25 +1,34 @@
 name: Central Js
+# Name of the reusable (common) workflow
 
 on:
-   workflow_call:
+  workflow_call:
+    # This workflow is NOT triggered directly.
+    # It is called from another workflow using `uses:`
+
     inputs:
       build_type:
+        # Snapshot or Release (passed from the calling repo)
         required: true
         type: string
 
       dev:
+        # DEV server selected in the calling workflow (optional)
         required: false
         type: string
 
       sit:
+        # SIT server selected in the calling workflow (optional)
         required: false
         type: string
 
       qa:
+        # QA server selected in the calling workflow (optional)
         required: false
         type: string
 
       prod:
+        # PROD server selected in the calling workflow (optional)
         required: false
         type: string
        
@@ -30,18 +39,22 @@ jobs:
 
     steps:
       - name: Checkout Repository
+        # Pulls the source code into the runner
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        # Installs Node.js 18 and enables npm cache
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: "npm"
 
       - name: Install Dependencies from package.json
+        # Installs project dependencies
         run: npm install
 
       - name: Upload node_modules
+        # Saves node_modules as an artifact for later jobs
         uses: actions/upload-artifact@v4
         with:
           name: node_modules-${{ github.run_number }}
@@ -57,24 +70,33 @@ jobs:
       #   run: npm start
 
   deploy:
-    name: Deploy to ${{ inputs.environment }}
+    name: Deploy to selected environment
     runs-on: ubuntu-latest
     needs: build
-    
-    # THIS LINE ENABLES APPROVALS
+    # Ensures deploy runs only after build succeeds
+
+    # This dynamically sets the GitHub Environment for the job
+    # and enables approvals when 'prod' is selected
     environment: >-
-        ${{
-         inputs.prod != '' && 'prod' ||
-         inputs.qa   != '' && 'qa'   ||
-         inputs.sit  != '' && 'sit'  ||
-         inputs.dev  != '' && 'dev'
-        }}
+      ${{
+        inputs.prod != '' && 'prod' ||
+        inputs.qa   != '' && 'qa'   ||
+        inputs.sit  != '' && 'sit'  ||
+        inputs.dev  != '' && 'dev'
+      }}
+
+    # Logic explanation:
+    # - If a prod server was selected → environment = prod (approval required)
+    # - Else if a qa server was selected → environment = qa
+    # - Else if a sit server was selected → environment = sit
+    # - Else if a dev server was selected → environment = dev
 
     steps:
       - name: Deployment info
         run: |
-          echo "Deploying ${{ inputs.build_type }} build"
-          echo "Server: ${{ inputs.prod }}"
-          echo "Server: ${{ inputs.dev}}"
-          echo "Server: ${{ inputs.sit }}"
-          echo "Server: ${{ inputs.qa }}"
+          echo "Deploying build type: ${{ inputs.build_type }}"
+          echo "Prod server: ${{ inputs.prod }}"
+          echo "Dev server:  ${{ inputs.dev }}"
+          echo "SIT server:  ${{ inputs.sit }}"
+          echo "QA server:   ${{ inputs.qa }}"
+
