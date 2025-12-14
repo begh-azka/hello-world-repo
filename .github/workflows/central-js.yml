@@ -96,6 +96,7 @@ jobs:
   
       - name: Start application
         run: npm start
+        timeout-minutes: 2
 
   Dev-Deployment:
     name: Deploy to DEV
