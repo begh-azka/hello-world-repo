@@ -1,0 +1,74 @@
+name: Docker Js
+
+on:
+  workflow_call:
+    secrets:
+        MONGO_PASSWORD: 
+          description: "Database secret"
+          required: true
+        DOCKER_PASSWORD: 
+          required: true
+          
+    inputs:
+      MONGO_USERNAME: 
+        type: string
+        required: true
+      DOCKER_USERNAME: 
+        type: string
+        required: true  
+      build_type:
+        required: true
+        type: string
+
+      dry_run:
+        required: true
+        type: boolean
+
+permissions:
+  contents: read
+  packages: write
+  
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}  # Owner's name is the username
+          password: ${{ secrets.GITHUB_TOKEN }} # Github automatically creates this token per workflow run
+
+      - name: Build & push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: | 
+              ${{ inputs.DOCKER_USERNAME }}/node-app:${{ github.sha }}
+              ${{ inputs.DOCKER_USERNAME }}/node-app:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+  deploy:
+       runs-on: ubuntu-latest
+       needs: build
+       steps:
+         - name: Checkout Source Repository
+           uses: actions/checkout@v4
+         - name: Deploy application
+           env:
+              MONGO_USERNAME: ${{ inputs.MONGO_USERNAME }}
+              MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+              DOCKER_USERNAME: ${{ inputs.DOCKER_USERNAME }}
+           run: |
+                chmod +x deploy.sh
+                ./deploy.sh
+                wget -qO- http://localhost:3000/live
