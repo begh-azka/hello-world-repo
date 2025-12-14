@@ -96,8 +96,15 @@ jobs:
           name: npm-test-results-${{ github.run_number }}
           path: test-results.xml
   
-      # - name: Run Code Coverage
-      #   run: npm run coverage
+      - name: Run Code Coverage
+        run: npm run coverage
+
+      - name: Archive Coverage Results
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: npm-coverage-results-${{ github.run_number }}
+          path: coverage
   
       # - name: Start application
       #   run: npm start
