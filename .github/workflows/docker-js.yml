@@ -1,5 +1,4 @@
 name: Docker Js
-# Name of the reusable (common) workflow
 
 on:
   workflow_call:
@@ -48,24 +47,13 @@ jobs:
           username: ${{ inputs.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # - name: Extract Docker metadata
-      #   id: meta
-      #   uses: docker/metadata-action@v5
-      #   with:
-      #       images: ${{ inputs.DOCKER_USERNAME }}/node-app
-      #       tags: |
-      #         type=sha
-      #         type=raw,value=latest
-
       - name: Build & push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-     #     tags: ${{ steps.meta.outputs.tags }}
           tags: | 
               ${{ inputs.DOCKER_USERNAME }}/node-app:${{ github.sha }}
               ${{ inputs.DOCKER_USERNAME }}/node-app:latest
-      #    labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
