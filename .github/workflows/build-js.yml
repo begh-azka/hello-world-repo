@@ -1,0 +1,84 @@
+name: Central Js
+# Name of the reusable (common) workflow
+
+on:
+  workflow_call:
+    # Enables this workflow to be called by another workflow using `uses:`
+    secrets:
+        MONGO_PASSWORD: 
+          description: "Database secret"
+          required: true
+    inputs:
+      MONGO_USERNAME: 
+        type: string
+        description: "Database secret"
+        required: true
+        
+      build_type:
+        # REQUIRED: Indicates Snapshot or Release build type from the caller
+        required: true
+        type: string
+
+      dry_run:
+        # REQUIRED: If true, deployment logic can be simulated (no changes)
+        required: true
+        type: boolean
+
+jobs:
+  build:
+    name: Build and Test
+    # Common build job that must complete before any deployment job runs
+    runs-on: ubuntu-latest
+
+    env:
+       # MONGO_URI: 'mongodb+srv://supercluster.d83jj.mongodb.net/superData'
+        MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
+        MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+
+    steps:
+      - name: Checkout Source Repository
+        # Fetches the repository source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        # Installs Node.js and enables npm dependency caching
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install Dependencies 
+        # Installs application dependencies
+        run: npm ci
+
+      # - name: Package artifact
+      #   run: tar -czf app.tar.gz .
+
+      # - name: Upload Artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: node-app-${{ github.run_number }}      # Unique Name for the Artifact Upload
+      #     path: app.tar.gz                             # The actual name/file path of the artifact on the server
+      
+      - name: Run Unit Testing
+        run: npm test
+      
+      - name: Archive Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-test-results-${{ github.run_number }}
+          path: test-results.xml
+  
+      - name: Run Code Coverage
+        run: npm run coverage
+        continue-on-error: true
+
+      - name: Archive Coverage Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-coverage-results-${{ github.run_number }}
+          path: coverage
+  
+      # - name: Start application
+      #   run: npm start
+      #   timeout-minutes: 2
