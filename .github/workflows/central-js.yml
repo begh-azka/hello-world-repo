@@ -4,7 +4,10 @@ name: Central Js
 on:
   workflow_call:
     # Enables this workflow to be called by another workflow using `uses:`
-
+    secrets:
+        MONGO_PASSWORD: 
+          description: "Database secret"
+          required: true
     inputs:
       build_type:
         # REQUIRED: Indicates Snapshot or Release build type from the caller
@@ -47,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-        MONGO_URI: 'mongodb+srv://supercluster.d83jj.mongodb.net/superData'
+       # MONGO_URI: 'mongodb+srv://supercluster.d83jj.mongodb.net/superData'
         MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
         MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
 
