@@ -9,7 +9,7 @@ on:
           required: true
         DOCKER_USERNAME: 
           required: true
-        DOCKER_PAAWORD: 
+        DOCKER_PASSWORD: 
           required: true
           
     inputs:
