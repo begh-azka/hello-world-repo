@@ -75,14 +75,14 @@ jobs:
         # Installs application dependencies
         run: npm ci
 
-      - name: Package artifact
-        run: tar -czf app.tar.gz .
+      # - name: Package artifact
+      #   run: tar -czf app.tar.gz .
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-app-${{ github.run_number }}      # Unique Name for the Artifact Upload
-          path: app.tar.gz                             # The actual name/file path of the artifact on the server
+      # - name: Upload Artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: node-app-${{ github.run_number }}      # Unique Name for the Artifact Upload
+      #     path: app.tar.gz                             # The actual name/file path of the artifact on the server
       
       - name: Run Unit Testing
         run: npm test
