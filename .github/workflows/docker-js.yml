@@ -1,6 +1,8 @@
 name: Docker Js
 
 on:
+  push:
+    paths: [.github/workflows/docker-js.yml]
   workflow_call:
     secrets:
         MONGO_PASSWORD: 
@@ -24,6 +26,9 @@ on:
         required: true
         type: boolean
 
+env:
+  IMAGE_NAME: ${{ inputs.DOCKER_USERNAME }}/node-app
+  
 jobs:
   build:
     name: Build Docker Image
@@ -63,7 +68,6 @@ jobs:
            env:
               MONGO_USERNAME: ${{ inputs.MONGO_USERNAME }}
               MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
-              DOCKER_USERNAME: ${{ inputs.DOCKER_USERNAME }}
            run: |
                 chmod +x deploy.sh
                 ./deploy.sh
