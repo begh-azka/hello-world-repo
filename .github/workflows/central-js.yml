@@ -68,6 +68,15 @@ jobs:
         with:
           name: node_modules-${{ github.run_number }}
           path: node_modules
+      
+      - name: Run Unit Testing
+        run: npm test
+  
+      - name: Run Code Coverage
+        run: npm run coverage
+  
+      - name: Start application
+        run: npm start
 
   Dev-Deployment:
     name: Deploy to DEV
@@ -108,6 +117,7 @@ jobs:
     if: >-
       ${{
         inputs.qa != '' &&
+        (inputs.build_type == 'Release') &&
         (needs.Dev-Deployment.result == 'success' ||
          needs.Dev-Deployment.result == 'skipped') &&
         (needs.SIT-Deployment.result == 'success' ||
@@ -127,6 +137,7 @@ jobs:
     if: >-
       ${{
         inputs.prod != '' &&
+        (inputs.build_type == 'Release') &&
         (needs.Dev-Deployment.result == 'success' ||
          needs.Dev-Deployment.result == 'skipped') &&
         (needs.SIT-Deployment.result == 'success' ||
