@@ -3,78 +3,80 @@ name: Central Js
 
 on:
   workflow_call:
-    # This workflow is NOT triggered directly.
-    # It is called from another workflow using `uses:`
+    # Enables this workflow to be called by another workflow using `uses:`
 
     inputs:
       build_type:
-        # Snapshot or Release (passed from the calling repo)
+        # REQUIRED: Indicates Snapshot or Release build type from the caller
         required: true
         type: string
 
       dev:
-        # DEV server selected in the calling workflow (optional)
+        # Optional DEV server selected by the caller
+        # If empty, DEV deployment job will be skipped
         required: false
         type: string
 
       sit:
-        # SIT server selected in the calling workflow (optional)
+        # Optional SIT server selected by the caller
+        # Controls whether SIT deployment runs
         required: false
         type: string
 
       qa:
-        # QA server selected in the calling workflow (optional)
+        # Optional QA server selected by the caller
+        # Controls whether QA deployment runs
         required: false
         type: string
 
       prod:
-        # PROD server selected in the calling workflow (optional)
+        # Optional PROD server selected by the caller
+        # Controls whether PROD deployment runs
         required: false
         type: string
-       
+
+      dry_run:
+        # REQUIRED: If true, deployment logic can be simulated (no changes)
+        required: true
+        type: boolean
+
 jobs:
   build:
     name: Build and Test
+    # Common build job that must complete before any deployment job runs
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
-        # Pulls the source code into the runner
+        # Fetches the repository source code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        # Installs Node.js 18 and enables npm cache
+        # Installs Node.js and enables npm dependency caching
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: "npm"
 
       - name: Install Dependencies from package.json
-        # Installs project dependencies
+        # Installs application dependencies
         run: npm install
 
       - name: Upload node_modules
-        # Saves node_modules as an artifact for later jobs
+        # Uploads dependencies as an artifact for reuse in later jobs
         uses: actions/upload-artifact@v4
         with:
           name: node_modules-${{ github.run_number }}
           path: node_modules
 
-      # - name: Run Unit Testing
-      #   run: npm test
-
-      # - name: Run Code Coverage
-      #   run: npm run coverage
-
-      # - name: Start application
-      #   run: npm start
-
   Dev-Deployment:
     name: Deploy to DEV
+    # Deploys to DEV only if a DEV server was selected
     runs-on: ubuntu-latest
     needs: build
     if: ${{ inputs.dev != '' }}
     environment: dev
+    # Uses DEV GitHub Environment (no approval)
 
     steps:
       - run: |
@@ -83,37 +85,57 @@ jobs:
 
   SIT-Deployment:
     name: Deploy to SIT
+    # Runs after build and DEV (if DEV was selected)
     runs-on: ubuntu-latest
-    needs: build
-    if: ${{ inputs.sit != '' }}
+    needs: [build, Dev-Deployment]
+    if: >-
+      ${{
+        inputs.sit != '' &&
+        (needs.Dev-Deployment.result == 'success' ||
+         needs.Dev-Deployment.result == 'skipped')
+      }}
     environment: sit
+    # Uses SIT GitHub Environment
 
     steps:
-      - run: |
-          echo "Deploying to SIT"
-          echo "Server: ${{ inputs.sit }}"
+      - run: echo "Deploying to SIT -> ${{ inputs.sit }}"
 
   QA-Deployment:
     name: Deploy to QA
+    # Runs after build, DEV, and SIT (only if selected)
     runs-on: ubuntu-latest
-    needs: build
-    if: ${{ inputs.qa != '' }}
+    needs: [build, Dev-Deployment, SIT-Deployment]
+    if: >-
+      ${{
+        inputs.qa != '' &&
+        (needs.Dev-Deployment.result == 'success' ||
+         needs.Dev-Deployment.result == 'skipped') &&
+        (needs.SIT-Deployment.result == 'success' ||
+         needs.SIT-Deployment.result == 'skipped')
+      }}
     environment: qa
+    # Uses QA GitHub Environment
 
     steps:
-      - run: |
-          echo "Deploying to QA"
-          echo "Server: ${{ inputs.qa }}"
+      - run: echo "Deploying to QA -> ${{ inputs.qa }}"
 
   PROD-Deployment:
     name: Deploy to PROD
+    # Runs after all lower environments (only if selected)
     runs-on: ubuntu-latest
-    needs: build
-    if: ${{ inputs.prod != '' }}
-    environment: prod   # approval happens here
+    needs: [build, Dev-Deployment, SIT-Deployment, QA-Deployment]
+    if: >-
+      ${{
+        inputs.prod != '' &&
+        (needs.Dev-Deployment.result == 'success' ||
+         needs.Dev-Deployment.result == 'skipped') &&
+        (needs.SIT-Deployment.result == 'success' ||
+         needs.SIT-Deployment.result == 'skipped') &&
+        (needs.QA-Deployment.result == 'success' ||
+         needs.QA-Deployment.result == 'skipped')
+      }}
+    environment: prod
+    # Uses PROD GitHub Environment (approval required)
 
     steps:
-      - run: |
-          echo "Deploying to PROD"
-          echo "Server: ${{ inputs.prod }}"
-
+      - run: echo "Deploying to PROD -> ${{ inputs.prod }}"
