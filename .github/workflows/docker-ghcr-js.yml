@@ -6,16 +6,11 @@ on:
         MONGO_PASSWORD: 
           description: "Database secret"
           required: true
-        DOCKER_PASSWORD: 
-          required: true
           
     inputs:
       MONGO_USERNAME: 
         type: string
         required: true
-      DOCKER_USERNAME: 
-        type: string
-        required: true  
       build_type:
         required: true
         type: string
