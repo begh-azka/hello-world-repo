@@ -173,7 +173,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: node-app
+          name: node-app-${{ github.run_number }} 
 
       - name: Connect to the Server
         uses: webfactory/ssh-agent@v0.9.0
@@ -183,9 +183,10 @@ jobs:
 
       - name: Deploy Artifact to the Server
         run: |
-          scp app.tar.gz ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}:/var/www/app
+          scp app.tar.gz ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/var/www/app
+      # User = username, Host = IP/DNS
       
-      - name: Deploy
+      - name: Restart
         run: |
           ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} << 'EOF'
             cd /var/www/app
