@@ -46,6 +46,11 @@ jobs:
     # Common build job that must complete before any deployment job runs
     runs-on: ubuntu-latest
 
+    env:
+        MONGO_URI: 'mongodb+srv://supercluster.d83jj.mongodb.net/superData'
+        MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
+        MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+
     steps:
       - name: Checkout Repository
         # Fetches the repository source code
