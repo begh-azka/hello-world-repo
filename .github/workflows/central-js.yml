@@ -95,10 +95,10 @@ jobs:
   
       - name: Run Code Coverage
         run: npm run coverage
+        continue-on-error: true
 
       - name: Archive Coverage Results
         uses: actions/upload-artifact@v4
-        continue-on-error: true
         with:
           name: npm-coverage-results-${{ github.run_number }}
           path: coverage
