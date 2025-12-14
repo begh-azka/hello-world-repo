@@ -22,7 +22,7 @@ on:
         type: boolean
 
 jobs:
-  PROD-Deployment:
+  Prod:
     name: Deploy to PROD
     runs-on: ubuntu-latest
     if: ${{inputs.prod != '' }}
