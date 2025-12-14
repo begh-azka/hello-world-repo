@@ -18,13 +18,12 @@ on:
       dry_run:
         required: true
         type: boolean
-
-permissions:
-  contents: read
-  packages: write
   
 jobs:
   build:
+    permissions:
+      contents: read
+      packages: write
     name: Build Docker Image
     runs-on: ubuntu-latest
 
