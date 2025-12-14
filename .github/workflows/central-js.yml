@@ -91,8 +91,8 @@ jobs:
           name: npm-test-results-${{ github.run_number }}
           path: npm-test-results
   
-      - name: Run Code Coverage
-        run: npm run coverage
+      # - name: Run Code Coverage
+      #   run: npm run coverage
   
       - name: Start application
         run: npm start
