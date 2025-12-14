@@ -79,8 +79,8 @@ jobs:
         # Uploads dependencies as an artifact for reuse in later jobs
         uses: actions/upload-artifact@v4
         with:
-          name: node_modules-${{ github.run_number }}
-          path: node_modules
+          name: node_modules-${{ github.run_number }}      # Unique Name for the Artifact Upload
+          path: node_modules      # The actual name/file path of the artifact on the server
       
       - name: Run Unit Testing
         run: npm test
@@ -89,7 +89,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: npm-test-results-${{ github.run_number }}
-          path: npm-test-results
+          path: test-results.xml
   
       # - name: Run Code Coverage
       #   run: npm run coverage
