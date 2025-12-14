@@ -9,6 +9,11 @@ on:
           description: "Database secret"
           required: true
     inputs:
+      MONGO_USERNAME: 
+        type: string
+        description: "Database secret"
+        required: true
+        
       build_type:
         # REQUIRED: Indicates Snapshot or Release build type from the caller
         required: true
