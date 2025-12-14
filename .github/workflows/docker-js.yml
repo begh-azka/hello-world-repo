@@ -64,8 +64,8 @@ jobs:
           push: true
      #     tags: ${{ steps.meta.outputs.tags }}
           tags: | 
-              ${{ inputs.DOCKER_USERNAME }}/node-app/${{ github.sha }}
-              ${{ inputs.DOCKER_USERNAME }}/node-app/latest
-          labels: ${{ steps.meta.outputs.labels }}
+              ${{ inputs.DOCKER_USERNAME }}/node-app:${{ github.sha }}
+              ${{ inputs.DOCKER_USERNAME }}/node-app:latest
+      #    labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
