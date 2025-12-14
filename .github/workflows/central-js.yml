@@ -60,7 +60,7 @@ jobs:
         MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Source Repository
         # Fetches the repository source code
         uses: actions/checkout@v4
 
@@ -71,16 +71,21 @@ jobs:
           node-version: 18
           cache: "npm"
 
-      - name: Install Dependencies from package.json
+      - name: Install Dependencies 
         # Installs application dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Archive node_modules
-        # Uploads dependencies as an artifact for reuse in later jobs
+      - name: Build App
+        run: npm run build
+
+      - name: Package artifact
+        run: tar -czf app.tar.gz .
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: node_modules-${{ github.run_number }}      # Unique Name for the Artifact Upload
-          path: node_modules      # The actual name/file path of the artifact on the server
+          name: node-app-${{ github.run_number }}      # Unique Name for the Artifact Upload
+          path: app.tar.gz                             # The actual name/file path of the artifact on the server
       
       - name: Run Unit Testing
         run: npm test
