@@ -29,10 +29,6 @@ jobs:
     name: Build Docker Image
     runs-on: ubuntu-latest
 
-    env:
-        MONGO_USERNAME: ${{ inputs.MONGO_USERNAME }}
-        MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
-
     steps:
       - name: Checkout Source Repository
         uses: actions/checkout@v4
@@ -57,3 +53,16 @@ jobs:
               ${{ inputs.DOCKER_USERNAME }}/node-app:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+  deploy:
+       runs-on: ubuntu-latest
+       needs: build
+       steps:
+         - name: Checkout Source Repository
+           uses: actions/checkout@v4
+         - name: Deploy application
+           env:
+              MONGO_USERNAME: ${{ inputs.MONGO_USERNAME }}
+              MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+           run: |
+                chmod +x deploy.sh
+                ./deploy.sh
