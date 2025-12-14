@@ -1,1 +1,59 @@
+name: Deploy Js
+# Name of the reusable (common) workflow
 
+on:
+  workflow_call:
+    # Enables this workflow to be called by another workflow using `uses:`
+    inputs:  
+      build_type:
+        # REQUIRED: Indicates Snapshot or Release build type from the caller
+        required: true
+        type: string
+
+      prod:
+        # Optional PROD server selected by the caller
+        # Controls whether PROD deployment runs
+        required: false
+        type: string
+
+      dry_run:
+        # REQUIRED: If true, deployment logic can be simulated (no changes)
+        required: true
+        type: boolean
+
+jobs:
+  PROD-Deployment:
+    name: Deploy to PROD
+    # Runs after all lower environments (only if selected)
+    runs-on: ubuntu-latest
+    if: >-
+      ${{
+        (inputs.prod != '') && (inputs.build_type == 'Release')
+      }}
+    environment: prod
+    # Uses PROD GitHub Environment (approval required)
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app-${{ github.run_number }} 
+
+      # - name: Connect to the Server
+      #   uses: webfactory/ssh-agent@v0.9.0
+      #   with:
+      #     ssh-private-key: ${{ secrets.PROD_SSH_KEY }}
+
+
+      # - name: Deploy Artifact to the Server
+      #   run: |
+      #     scp app.tar.gz ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/var/www/app
+      # # User = username, Host = IP/DNS
+      
+      # - name: Restart
+      #   run: |
+      #     ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} << 'EOF'
+      #       cd /var/www/app
+      #       npm ci --production
+      #       pm2 restart app || pm2 start index.js --name app
+      #     EOF
