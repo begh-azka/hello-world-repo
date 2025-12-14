@@ -175,21 +175,21 @@ jobs:
         with:
           name: node-app-${{ github.run_number }} 
 
-      - name: Connect to the Server
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.PROD_SSH_KEY }}
+      # - name: Connect to the Server
+      #   uses: webfactory/ssh-agent@v0.9.0
+      #   with:
+      #     ssh-private-key: ${{ secrets.PROD_SSH_KEY }}
 
 
-      - name: Deploy Artifact to the Server
-        run: |
-          scp app.tar.gz ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/var/www/app
-      # User = username, Host = IP/DNS
+      # - name: Deploy Artifact to the Server
+      #   run: |
+      #     scp app.tar.gz ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/var/www/app
+      # # User = username, Host = IP/DNS
       
-      - name: Restart
-        run: |
-          ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} << 'EOF'
-            cd /var/www/app
-            npm ci --production
-            pm2 restart app || pm2 start index.js --name app
-          EOF
+      # - name: Restart
+      #   run: |
+      #     ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} << 'EOF'
+      #       cd /var/www/app
+      #       npm ci --production
+      #       pm2 restart app || pm2 start index.js --name app
+      #     EOF
