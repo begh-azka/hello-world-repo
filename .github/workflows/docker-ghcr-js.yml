@@ -53,8 +53,8 @@ jobs:
           context: .
           push: true
           tags: | 
-              ${{ inputs.DOCKER_USERNAME }}/node-app:${{ github.sha }}
-              ${{ inputs.DOCKER_USERNAME }}/node-app:latest
+              ${{ github.actor }}/node-app:${{ github.sha }}
+              ${{ github.actor }}/node-app:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
   deploy:
@@ -67,7 +67,7 @@ jobs:
            env:
               MONGO_USERNAME: ${{ inputs.MONGO_USERNAME }}
               MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
-              DOCKER_USERNAME: ${{ inputs.DOCKER_USERNAME }}
+              DOCKER_USERNAME: ${{ github.actor }}
            run: |
                 chmod +x deploy.sh
                 ./deploy.sh
