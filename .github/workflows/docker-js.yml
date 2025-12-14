@@ -7,10 +7,10 @@ on:
         MONGO_PASSWORD: 
           description: "Database secret"
           required: true
-        # DOCKER_USERNAME: 
-        #   required: true
-        # DOCKER_PAAWORD: 
-        #   required: true
+        DOCKER_USERNAME: 
+          required: true
+        DOCKER_PAAWORD: 
+          required: true
           
     inputs:
       MONGO_USERNAME: 
