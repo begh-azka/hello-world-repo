@@ -63,6 +63,8 @@ jobs:
            env:
               MONGO_USERNAME: ${{ inputs.MONGO_USERNAME }}
               MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+              DOCKER_USERNAME: ${{ inputs.DOCKER_USERNAME }}
            run: |
                 chmod +x deploy.sh
                 ./deploy.sh
+                wget -qO- http://localhost:3000/live
