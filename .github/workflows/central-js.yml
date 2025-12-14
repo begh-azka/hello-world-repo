@@ -75,9 +75,6 @@ jobs:
         # Installs application dependencies
         run: npm ci
 
-      - name: Build App
-        run: npm run build
-
       - name: Package artifact
         run: tar -czf app.tar.gz .
 
