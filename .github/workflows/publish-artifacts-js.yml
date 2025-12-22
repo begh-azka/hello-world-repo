@@ -40,7 +40,7 @@ jobs:
         with:
           node-version: 18
           cache: "npm"
-          registry-url: 'npm.pkg.github.com'
+          registry-url: https://npm.pkg.github.com
 
 
       - name: Install Dependencies 
