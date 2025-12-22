@@ -41,6 +41,7 @@ jobs:
           node-version: 18
           cache: "npm"
           registry-url: 'npm.pkg.github.com'
+          scope: ${{env.REPO_NAME}}
 
       - name: Install Dependencies 
         run: npm ci
