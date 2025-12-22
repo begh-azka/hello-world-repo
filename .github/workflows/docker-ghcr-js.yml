@@ -1,7 +1,8 @@
+# Common Job for Docker Build & Deploy
 name: GHCR-JS
 
 permissions:
-  contents: read
+  #contents: read
   packages: write
   
 on:
