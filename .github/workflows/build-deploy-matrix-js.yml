@@ -92,9 +92,15 @@ jobs:
           echo "Creating tag: $TAG"
           git tag "$TAG"
           git push origin "$TAG"
+          
+      - name: Determining Target Server
+        run: | 
+          echo ${{inputs.dev}}
+          
+      
 
   Deployment:
-    name: Deploy to ${{ matrix.env }}
+    name: Deploy to ${{ inputs.env }}
     needs: Build
     runs-on: ubuntu-latest
     # ${{ matrix.env != '' }} &&
@@ -108,6 +114,7 @@ jobs:
           - ${{ inputs.prod }}
 
     if: >
+      ( inputs.dev != '' ) || ( inputs.sit != '' ) || ( inputs.qa != '' ) || ( inputs.prod != '' ) &&
       (
         github.ref == 'refs/heads/main' ||
         startsWith(github.ref, 'refs/heads/release/') ||
