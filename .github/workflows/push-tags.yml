@@ -22,11 +22,12 @@ jobs:
          if: ${{ (github.ref_name == 'main' || github.ref_name == 'release') && inputs.environment == 'dev' }}
          run: |
            echo ${{ inputs.environment}}
-           echo SHORT_SHA="${GITHUB_SHA::6}" >> $GITHUB_ENV 
-           TAG = "v${{ SHORT_SHA }}"
-           echo "Tag: $TAG"
-           git tag $TAG
-           git push origin $TAG
+           echo "${GITHUB_SHA::6}" 
+           # TAG = "v${{ SHORT_SHA }}"
+           # echo "Tag: $TAG"
+           # git tag $TAG
+           # git push origin $TAG
+           
          #  git config user.name "github-actions"
          #  git config user.email "github-actions@github.com"
 
