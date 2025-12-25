@@ -131,4 +131,6 @@ jobs:
               kubectl cluster-info
               echo
               kubectl get nodes -o wide
+        - name: Deploy
+          run: kubectl create deployment node-js-app --image="${{ env.IMAGE_NAME }}:${{ github.sha }}"
            
