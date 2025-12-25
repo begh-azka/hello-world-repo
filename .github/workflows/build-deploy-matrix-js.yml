@@ -88,10 +88,10 @@ jobs:
             startsWith(github.ref, 'refs/heads/release/')
           )
         run: |
-          TAG="v1.0.${{ github.sha }}"
-          echo "Creating tag: $TAG"
-          git tag "$TAG"
-          git push origin "$TAG"
+           TAG = "v${GITHUB_SHA::6}"
+           echo "Tag: $TAG"
+           git tag $TAG
+           git push origin $TAG
               
 
   Deployment:
