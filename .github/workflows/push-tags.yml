@@ -21,10 +21,14 @@ jobs:
        - name: Create Tag
          if: (github.ref_name == 'main' || github.ref_name == 'release') 
          run: |
-           Tag = "${GITHUB_SHA}"
-           echo "Tag: $TAG"
-           git tag $TAG
-           git push origin $TAG
+             echo "SHORT_SHA=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
+
+       
+         # echo "${GITHUB_SHA::6}" 
+         # Tag = "${GITHUB_SHA}"
+         # echo "Tag: $TAG"
+         # git tag $TAG
+         # git push origin $TAG
            
          #  git config user.name "github-actions"
          #  git config user.email "github-actions@github.com"
