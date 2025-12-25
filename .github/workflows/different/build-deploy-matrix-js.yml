@@ -96,6 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     
     strategy:
+      max-parallel: 1
       matrix: 
         env: [ "${{ inputs.dev }}", "${{ inputs.qa }}", "${{ inputs.sit }}", "${{ (inputs.prod }}" ]
 
