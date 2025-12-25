@@ -22,7 +22,9 @@ jobs:
          if: ${{ (github.ref_name == 'main' || github.ref_name == 'release') && inputs.environment == 'dev' }}
          run: |
            echo ${{ inputs.environment}}
-           TAG="v1.0.${{ github.run_number }}"
+           Short_SHA=echo "${{ github.sha:0:6} }}"
+           echo $Short_SHA
+           TAG="v1.2.${{ github.run_number }}"
            echo "Tag: $TAG"
            git tag $TAG
            git push origin $TAG
