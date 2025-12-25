@@ -23,6 +23,7 @@ jobs:
          run: |
            echo ${{ inputs.environment}}
            echo "${GITHUB_SHA::6}" 
+        
            # TAG = "v${{ SHORT_SHA }}"
            # echo "Tag: $TAG"
            # git tag $TAG
