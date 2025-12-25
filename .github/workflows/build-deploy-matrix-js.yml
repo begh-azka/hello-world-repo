@@ -108,7 +108,7 @@ jobs:
           - ${{ inputs.prod }}
 
     if: >
-      matrix.env != '' &&
+      ${{ matrix.env != '' }} &&
       (
         github.ref == 'refs/heads/main' ||
         startsWith(github.ref, 'refs/heads/release/') ||
