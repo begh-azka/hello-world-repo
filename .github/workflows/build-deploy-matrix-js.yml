@@ -1,76 +1,75 @@
-# Common job for build and deploy
 name: Build-Deploy-Matrix-Js
+
 permissions:
   contents: write
 
 on:
   workflow_call:
     secrets:
-        MONGO_PASSWORD: 
-          description: "Database secret"
-          required: true
+      MONGO_PASSWORD:
+        required: true
     inputs:
-      MONGO_USERNAME: 
+      MONGO_USERNAME:
         type: string
-        description: "Database secret"
         required: true
-        
+
       build_type:
-        required: true
         type: string
+        required: true
 
       dev:
-        required: false
         type: string
+        required: false
+        default: ""
 
       sit:
-        required: false
         type: string
+        required: false
+        default: ""
 
       qa:
-        required: false
         type: string
+        required: false
+        default: ""
 
       prod:
-        required: false
         type: string
+        required: false
+        default: ""
 
       dry_run:
-        required: true
         type: boolean
+        required: true
 
 jobs:
-  build:
+  Build:
     name: Build and Test
     runs-on: ubuntu-latest
 
     env:
-       # MONGO_URI: 'mongodb+srv://supercluster.d83jj.mongodb.net/superData'
-        MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
-        MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      MONGO_USERNAME: ${{ inputs.MONGO_USERNAME }}
+      MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
 
     steps:
-      - name: Checkout Source Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: "npm"
+          cache: npm
 
-      - name: Install Dependencies 
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Run Unit Testing
+      - name: Run Unit Tests
         run: npm test
-      
+
       - name: Archive Test Results
         uses: actions/upload-artifact@v4
         with:
           name: npm-test-results-${{ github.run_number }}
           path: test-results.xml
-  
+
       - name: Run Code Coverage
         run: npm run coverage
         continue-on-error: true
@@ -80,35 +79,46 @@ jobs:
         with:
           name: npm-coverage-results-${{ github.run_number }}
           path: coverage
-      
+
       - name: Create Tag and Push It
-        if: ${{ contains(github.ref_name = 'main','release/') }} && ( ${{ inputs.build_type == 'Release'}} )
+        if: >
+          inputs.build_type == 'Release' &&
+          (
+            github.ref == 'refs/heads/main' ||
+            startsWith(github.ref, 'refs/heads/release/')
+          )
         run: |
-           echo ${{ inputs.environment}}
-           TAG="v1.0.${{ github.run_number }}"
-           echo "Tag: $TAG"
-           git tag $TAG
-           git push origin $TAG
+          TAG="v1.0.${{ github.sha }}"
+          echo "Creating tag: $TAG"
+          git tag "$TAG"
+          git push origin "$TAG"
 
   Deployment:
     name: Deploy to ${{ matrix.env }}
-    needs: build
+    needs: Build
     runs-on: ubuntu-latest
-    
+
     strategy:
       max-parallel: 1
-      matrix: 
-        env: [ "${{ inputs.dev }}", "${{ inputs.qa }}", "${{ inputs.sit }}", "${{ (inputs.prod }}" ]
+      matrix:
+        env:
+          - ${{ inputs.dev }}
+          - ${{ inputs.sit }}
+          - ${{ inputs.qa }}
+          - ${{ inputs.prod }}
 
     if: >
-        matrix.env != '' &&
-        (
+      matrix.env != '' &&
+      (
         github.ref == 'refs/heads/main' ||
         startsWith(github.ref, 'refs/heads/release/') ||
         startsWith(github.ref, 'refs/tags/')
-    
+      )
+
     environment: ${{ matrix.env }}
+
     steps:
-      - run: |
-          echo "Hello world from {{ matrix.env }}
-          echo -------------------------------------------
+      - name: Deploy
+        run: |
+          echo "Deploying to environment: ${{ matrix.env }}"
+          echo "-------------------------------------------"
