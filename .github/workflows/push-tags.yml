@@ -21,7 +21,7 @@ jobs:
        - name: Create Tag
          if: (github.ref_name == 'main' || github.ref_name == 'release') 
          run: |
-           Tag = ${{GITHUB_SHA}}
+           Tag = "${GITHUB_SHA}"
            echo "Tag: $TAG"
            git tag $TAG
            git push origin $TAG
