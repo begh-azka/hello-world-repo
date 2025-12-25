@@ -24,10 +24,6 @@ jobs:
            echo ${{ inputs.environment}}
            echo "${GITHUB_SHA::6}" 
         
-           # TAG = "v${{ SHORT_SHA }}"
-           # echo "Tag: $TAG"
-           # git tag $TAG
-           # git push origin $TAG
            
          #  git config user.name "github-actions"
          #  git config user.email "github-actions@github.com"
