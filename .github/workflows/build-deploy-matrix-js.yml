@@ -84,7 +84,7 @@ jobs:
         if: >
           inputs.build_type == 'Release' &&
           (
-            github.ref == 'refs/heads/main' ||
+            github.ref == 'refs/heads/master' ||
             startsWith(github.ref, 'refs/heads/release/')
           )
         run: |
