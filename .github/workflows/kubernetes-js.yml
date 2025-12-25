@@ -102,16 +102,33 @@ jobs:
           with:
               version: 'v1.26.0'
 
-        - name: Set Kubeconfig File
-          uses: azure/k8s-set-context@v3
-          with:
-            method: kubeconfig
-            kubeconfig: ${{ secrets.KUBECONFIG }}
-            
-        - name: Fetch Kubernetes Cluster Details
+        # - name: Set Kubeconfig File
+        #   uses: azure/k8s-set-context@v3
+        #   with:
+        #     method: kubeconfig
+        #     kubeconfig: ${{ secrets.KUBECONFIG }}
+
+        # - name: Fetch Kubernetes Cluster Details
+        #   run: |
+        #       kubectl version 
+        #       echo --------------------------------------
+        #       echo
+        #       kubectl get nodes -o wide
+
+        - name: Install Minikube
           run: |
-              kubectl version 
-              echo --------------------------------------
+              curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+              sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+        - name: Start Minikube
+          run: |
+              minikube start --driver=docker
+
+        - name: Verify kubeconfig
+          run: |
+              echo "KUBECONFIG=$HOME/.kube/config"
+              echo "------------------------------------\n"
+              kubectl cluster-info
               echo
               kubectl get nodes -o wide
            
