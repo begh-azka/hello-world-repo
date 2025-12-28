@@ -37,6 +37,12 @@ jobs:
       environment: ${{ inputs.environment }}
 
   Validating-Env:
+    if: always() && (
+        needs.build-java.result == 'success' ||
+        needs.build-js.result == 'success' ||
+        needs.build-python.result == 'success' ||
+        needs.build-dotnet.result == 'success'
+      )
     runs-on: ubuntu-latest
     environment: ${{inputs.environment}}
     steps:
