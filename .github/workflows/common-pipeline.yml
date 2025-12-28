@@ -55,7 +55,7 @@ jobs:
     needs: Validating-Env
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: inputs.environment !=''
+    if: always() && needs.Validating-Env == 'success'&& inputs.environment != ''
     steps:
       - name: Deploy
         run: |
