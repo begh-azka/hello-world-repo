@@ -4,19 +4,11 @@ on:
   workflow_call:
     inputs:
       app_type:
-        description: "Application type"
         required: true
         type: string
-
       environment:
-        description: "Deployment environment"
         required: true
         type: string
-
-    outputs:
-      image_ref:
-        description: "Docker image reference"
-        value: ${{ jobs.build.outputs.image_ref }}
 
 permissions:
   contents: read
@@ -24,60 +16,68 @@ permissions:
   security-events: write
 
 jobs:
-  Build:
-    name: Build the Code
+  build-java:
+    if: inputs.app_type == 'java'
+    uses: begh-azka/hello-world-repo/.github/workflows/java-build.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+    
+
+  build-js:
+    if: inputs.app_type == 'js'
+    uses: begh-azka/hello-world-repo/.github/workflows/js-build.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+    
+
+  build-python:
+    if: inputs.app_type == 'python'
+    uses: begh-azka/hello-world-repo/.github/workflows/python-build.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+    
+
+  build-dotnet:
+    if: inputs.app_type == 'dotnet'
+    uses: begh-azka/hello-world-repo/.github/workflows/dotnet-build.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+    
+
+  trivy-scan:
+    name: Trivy Scan
+    needs:
+      - build-java
+      - build-js
+      - build-python
+      - build-dotnet
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Source
-        uses: actions/checkout@v4
-        
-      - name: Build Java Code 
-        if: inputs.app_type == 'java'
-        uses: begh-azka/hello-world-repo/.github/workflows/java-build.yml@main
-        with:
-          environment: ${{ inputs.environment }}
-    
-
-      - name: Build Js Code 
-        if: inputs.app_type == 'js'
-        uses: begh-azka/hello-world-repo/.github/workflows/js-build.yml@main
-        with:
-          environment: ${{ inputs.environment }}
-        
-
-      - name: Build Python Code
-        if: inputs.app_type == 'python'
-        uses: begh-azka/hello-world-repo/.github/workflows/python-build.yml@main
-        with:
-          environment: ${{ inputs.environment }}
-    
-
-      - name: Build dotnet Code
-        if: inputs.app_type == 'dotnet'
-        uses: begh-azka/hello-world-repo/.github/workflows/dotnet-build.yml@main
-        with:
-            environment: ${{ inputs.environment }}
-            
-            
       - name: Trivy Scan
         uses: aquasecurity/trivy-action@0.24.0
         with:
-            image-ref: ${{ needs.build.outputs.image_ref }}
-            format: html
-            output: trivy-report.html
-    
+          image-ref: >-
+            ${{
+              needs.build-java.outputs.image_ref ||
+              needs.build-js.outputs.image_ref ||
+              needs.build-python.outputs.image_ref ||
+              needs.build-dotnet.outputs.image_ref
+            }}
+          format: html
+          output: trivy-report.html
+
       - name: Upload Trivy Report
         uses: actions/upload-artifact@v4
         with:
-            name: trivy-report
-            path: trivy-report.html
+          name: trivy-report
+          path: trivy-report.html
 
-  Deploy:
-    name: Deploy the Code to Server(s)
-    needs: Build
+  deploy:
+    name: Deploy
+    needs: trivy-scan
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
       - name: Deploy
         run: |
-          echo "Deploying image ${{ needs.build.outputs.image_ref }} to ${{ inputs.environment }}"
+          echo "Deploying image to ${{ inputs.environment }}"
