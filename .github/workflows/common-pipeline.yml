@@ -42,6 +42,10 @@ jobs:
         needs.build-js.result == 'success' ||
         needs.build-python.result == 'success' 
       )
+    needs:
+        - build-java
+        - build-js
+        - build-python
     runs-on: ubuntu-latest
     environment: ${{inputs.environment}}
     steps:
