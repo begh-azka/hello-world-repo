@@ -51,7 +51,7 @@ jobs:
             ${{
               needs.build-java.outputs.image_ref ||
               needs.build-js.outputs.image_ref ||
-              needs.build-python.outputs.image_ref ||
+              needs.build-python.outputs.image_ref 
             }}
           format: html
           output: trivy-report.html
