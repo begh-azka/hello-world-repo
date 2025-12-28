@@ -36,21 +36,12 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
     
-
-  build-dotnet:
-    if: inputs.app_type == 'dotnet'
-    uses: begh-azka/hello-world-repo/.github/workflows/dotnet-build.yml@main
-    with:
-      environment: ${{ inputs.environment }}
-    
-
   trivy-scan:
     name: Trivy Scan
     needs:
       - build-java
       - build-js
       - build-python
-      - build-dotnet
     runs-on: ubuntu-latest
     steps:
       - name: Trivy Scan
@@ -61,7 +52,6 @@ jobs:
               needs.build-java.outputs.image_ref ||
               needs.build-js.outputs.image_ref ||
               needs.build-python.outputs.image_ref ||
-              needs.build-dotnet.outputs.image_ref
             }}
           format: html
           output: trivy-report.html
