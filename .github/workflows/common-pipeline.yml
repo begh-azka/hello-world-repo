@@ -35,40 +35,16 @@ jobs:
     uses: begh-azka/hello-world-repo/.github/workflows/python-build.yml@main
     with:
       environment: ${{ inputs.environment }}
-    
-  trivy-scan:
-    name: Trivy Scan
-    if: >
-      needs.build-java.result == 'success' ||
-      needs.build-js.result == 'success' ||
-      needs.build-python.result == 'success' 
-    needs:
-      - build-java
-      - build-js
-      - build-python
+
+  Validating-Env:
     runs-on: ubuntu-latest
+    environment: ${{inputs.environment}}
     steps:
-      - name: Trivy Scan
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          image-ref: >-
-            ${{
-              needs.build-java.outputs.image_ref ||
-              needs.build-js.outputs.image_ref ||
-              needs.build-python.outputs.image_ref 
-            }}
-          format: html
-          output: trivy-report.html
-
-      - name: Upload Trivy Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-report
-          path: trivy-report.html
-
+      - run: echo "${{ inputs.environment }} has been selected"
+      
   deploy:
     name: Deploy
-    needs: trivy-scan
+    needs: Validating-Env
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
