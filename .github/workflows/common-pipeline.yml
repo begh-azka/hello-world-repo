@@ -1,0 +1,67 @@
+name: Common CI Pipeline
+
+on:
+  workflow_call:
+    inputs:
+      app_type:
+        description: "Application type"
+        required: true
+        type: string
+
+      environment:
+        description: "Deployment environment"
+        required: true
+        type: string
+
+    outputs:
+      image_ref:
+        description: "Docker image reference"
+        value: ${{ jobs.build.outputs.image_ref }}
+
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+
+jobs:
+  checkout:
+    name: Checkout Source
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+  build:
+    name: Build & Push Image
+    needs: checkout
+    uses: org-name/central-ci/.github/workflows/${{ inputs.app_type }}-build.yml@v1
+    with:
+      environment: ${{ inputs.environment }}
+    # secrets: inherit
+
+  trivy-scan:
+    name: Trivy Scan
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trivy Scan Image
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ${{ needs.build.outputs.image_ref }}
+          format: html
+          output: trivy-report.html
+
+      - name: Upload Trivy Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: trivy-report.html
+
+  deploy:
+    name: Deploy Application
+    needs: trivy-scan
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Deploy
+        run: |
+          echo "Deploying image ${{ needs.build.outputs.image_ref }} to ${{ inputs.environment }}"
