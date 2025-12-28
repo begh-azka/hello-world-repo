@@ -47,7 +47,6 @@ jobs:
         - build-js
         - build-python
     runs-on: ubuntu-latest
-    environment: ${{inputs.environment}}
     steps:
       - run: echo "${{ inputs.environment }} has been selected"
       
