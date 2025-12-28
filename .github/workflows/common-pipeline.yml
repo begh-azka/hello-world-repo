@@ -38,6 +38,10 @@ jobs:
     
   trivy-scan:
     name: Trivy Scan
+    if: >
+      needs.build-java.result == 'success' ||
+      needs.build-js.result == 'success' ||
+      needs.build-python.result == 'success' 
     needs:
       - build-java
       - build-js
